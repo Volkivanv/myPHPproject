@@ -14,8 +14,8 @@ use Twig\Source;
 use Twig\Template;
 use Twig\TemplateWrapper;
 
-/* main.tpl */
-class __TwigTemplate_19ccb5fa79011e8272315ff0f06dc581 extends Template
+/* user-empty.tpl */
+class __TwigTemplate_19715eed7cd56096fb56a3d674b3a5e1 extends Template
 {
     private Source $source;
     /**
@@ -39,21 +39,9 @@ class __TwigTemplate_19ccb5fa79011e8272315ff0f06dc581 extends Template
     {
         $macros = $this->macros;
         // line 1
-        yield "<!DOCTYPE html>
-<html>
-    <head>
-        <title>";
-        // line 4
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["title"] ?? null), "html", null, true);
-        yield "</title>
-    </head>
-    <body>
-        ";
-        // line 7
-        yield from $this->loadTemplate(($context["content_template_name"] ?? null), "main.tpl", 7)->unwrap()->yield($context);
-        // line 8
-        yield "    </body>
-</html>";
+        yield "<p>";
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["message"] ?? null), "html", null, true);
+        yield "</p>";
         yield from [];
     }
 
@@ -62,7 +50,7 @@ class __TwigTemplate_19ccb5fa79011e8272315ff0f06dc581 extends Template
      */
     public function getTemplateName(): string
     {
-        return "main.tpl";
+        return "user-empty.tpl";
     }
 
     /**
@@ -78,11 +66,11 @@ class __TwigTemplate_19ccb5fa79011e8272315ff0f06dc581 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  55 => 8,  53 => 7,  47 => 4,  42 => 1,);
+        return array (  42 => 1,);
     }
 
     public function getSourceContext(): Source
     {
-        return new Source("", "main.tpl", "/data/mysite.local/src/Views/main.tpl");
+        return new Source("", "user-empty.tpl", "/data/mysite.local/src/Views/user-empty.tpl");
     }
 }
