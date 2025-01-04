@@ -1,4 +1,5 @@
 <?php
+
 namespace Geekbrains\Application1\Controllers;
 
 use Geekbrains\Application1\Render;
@@ -6,6 +7,10 @@ use Geekbrains\Application1\Models\User;
 
 class UserController
 {
+    public function actionAddUser()
+    {
+        return "Тут добавляется юзер";
+    }
     public function actionIndex()
     {
         $users = User::getAllUsersFromStorage();

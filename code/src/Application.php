@@ -11,6 +11,9 @@ class Application
 
     public function run()
     {
+        // echo "<pre>";
+        // print_r($_SERVER);
+
         // разбиваем адрес по символу слеша
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);
 
@@ -41,7 +44,7 @@ class Application
                 return "Метод не существует";
             }
         } else {
-            return "Класс не существует";
+            return "Класс ". $this->controllerName. " не существует";
         }
 
         // создаем экземпляр контроллера, если класс существует
