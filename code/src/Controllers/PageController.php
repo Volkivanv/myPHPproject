@@ -10,6 +10,6 @@ class PageController
     {
         $render = new Render();
 
-        return $render->renderPage('page-index.tpl', ['title' => 'Главная страница']);
+        return $render->renderPage('page-index.twig', ['title' => 'Главная страница']);
     }
 }

@@ -12,7 +12,7 @@ class UserController
         $render = new Render();
         if (!$users) {
             return $render->renderPage(
-                'user-empty.tpl',
+                'user-empty.twig',
                 [
                     'title' => 'Список пользователей в хранилище',
                     'message' => "Список не найден"
@@ -20,7 +20,7 @@ class UserController
             );
         } else {
             return $render->renderPage(
-                'user-index.tpl',
+                'user-index.twig',
                 [
                     'title' => 'Список пользователей в хранилище',
                     'users' => $users
