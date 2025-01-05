@@ -8,10 +8,12 @@ class Phone
 
     public function __construct()
     {
-        $this->phone = '+7844432423';
+     //   $this->phone = '+7844432423';
     }
 
     public function getPhone(){
+        var_dump($_GET);
+        $this->phone =$_GET['phone'] ?? '';
         return $this->phone;
     }
 

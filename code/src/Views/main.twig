@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{{ title }}</title>
-    </head>
-    <body>
-    <nav>
-        <a href="/">Главная</a>
-        <a href="/user">Пользователи</a>
-        <a href="/about">О нас</a>
-        <a href="/site">Информация о сайте</a>
-    </nam>
-        {% include content_template_name %}
-    </body>
+	<head>
+		<link rel="stylesheet" href="/css/styles.css">
+		<title>{{ title }}</title>
+	</head>
+	<body>
+		<div class="top">
+			<header>{% include header_template_name %}</header>
+			<nav class="navigation">{% include navigation_template_name %}</nav>
+		</div>
+		<div class="middle">
+			<main>{% include content_template_name %}</main>
+			<sidebar>{% include sidebar_template_name %}</sidebar>
+		</div>
+		<footer>{% include footer_template_name %}</footer>
+	</body>
 </html>

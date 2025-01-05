@@ -2,17 +2,24 @@
 
 namespace Geekbrains\Application1;
 
-class Application
+final class Application
 {
     private const APP_NAMESPACE = 'Geekbrains\Application1\Controllers\\';
 
     private string $controllerName;
     private string $methodName;
 
+    private static array $config;
+
+    public static function config(){
+        return Application::$config;
+    }
+
     public function run()
     {
         // echo "<pre>";
         // print_r($_SERVER);
+        Application::$config = parse_ini_file('config.ini',true);
 
         // разбиваем адрес по символу слеша
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);

@@ -10,7 +10,7 @@ class SiteController
     public function actionIndex(){
 
          $siteName = (new SiteInfo())->getName();
-         echo $siteName;
+       //  echo $siteName;
          $render = new Render();
          return $render->renderPage('site-index.twig', ['sitename'=> $siteName]);
     }
@@ -18,6 +18,10 @@ class SiteController
 
          $siteInfo = (new SiteInfo())->getInfo();
          $render = new Render();
-         return $render->renderPage('site-info.twig', $siteInfo);
+         return $render->renderPage('site-info.twig',[
+          'webserver' => $siteInfo['webserver'],
+          'interpretator' => $siteInfo['interpretator'],
+          'browser' => $siteInfo['browser'],
+         ]);
     }
 }

@@ -24,7 +24,12 @@ class Render
         $template = $this->environment->load('main.twig');
         
         $templateVariables['content_template_name'] = $contentTemplateName;
-        
+        $templateVariables['header_template_name'] = 'header.twig';
+        $templateVariables['footer_template_name'] = 'footer.twig';
+        $templateVariables['navigation_template_name'] = 'navigation.twig';
+        $templateVariables['sidebar_template_name'] = 'sidebar.twig';
         return $template->render($templateVariables);
     }
 }
+
+//echo 123;
