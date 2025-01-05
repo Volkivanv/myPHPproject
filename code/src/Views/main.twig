@@ -5,14 +5,14 @@
 		<title>{{ title }}</title>
 	</head>
 	<body>
-		<div class="top">
-			<header>{% include header_template_name %}</header>
+		<div class="top container">
+			<header class="header">{% include header_template_name %}</header>
 			<nav class="navigation">{% include navigation_template_name %}</nav>
 		</div>
-		<div class="middle">
-			<main>{% include content_template_name %}</main>
-			<sidebar>{% include sidebar_template_name %}</sidebar>
+		<div class="middle container">
+			<main class="main">{% include content_template_name %}</main>
+			<sidebar class="sidebar">{% include sidebar_template_name %}</sidebar>
 		</div>
-		<footer>{% include footer_template_name %}</footer>
+		<footer class="footer container">{% include footer_template_name %}</footer>
 	</body>
 </html>

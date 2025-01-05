@@ -18,6 +18,7 @@ class Render
         $this->environment = new Environment($this->loader, [
          //   'cache' => $_SERVER['DOCUMENT_ROOT'] . '/cache/',
         ]);
+        $this->environment->getExtension(\Twig\Extension\CoreExtension::class)->setTimezone('Europe/Moscow');
     }
     public function renderPage(string $contentTemplateName = 'page-index.twig', array $templateVariables = [])
     {
