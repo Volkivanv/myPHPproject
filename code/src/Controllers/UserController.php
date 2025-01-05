@@ -7,9 +7,20 @@ use Geekbrains\Application1\Models\User;
 
 class UserController
 {
-    public function actionAddUser()
+    public function actionSave()
     {
-        return "Тут добавляется юзер";
+        echo("добавление");
+
+
+        $users = User::addUserFromRequest();
+        $render = new Render();
+        return $render->renderPage(
+            'user-index.twig',
+            [
+                'title' => 'Список пользователей в хранилище',
+                'users' => $users
+            ]
+        );
     }
     public function actionIndex()
     {

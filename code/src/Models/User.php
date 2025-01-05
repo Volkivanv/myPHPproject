@@ -39,7 +39,11 @@ class User
             $users = [];
             while (!feof($file)) {
                 $userString = fgets($file);
+                if(strlen($userString) == 0){
+                    break;
+                }
                 $userArray = explode(",", $userString);
+
                 $user = new User(
                     $userArray[0]
                 );
@@ -51,5 +55,22 @@ class User
         } else {
             return false;
         }
+    }
+    public static function addUserFromRequest()
+    {
+
+        $userN = $_GET['name'] ?? '';
+        $userBirthdayString = $_GET['birthday'] ?? '';
+        $userB = strtotime($userBirthdayString);
+
+        $address = $_SERVER['DOCUMENT_ROOT'] . User::$storageAddress;
+        $file = fopen($address, "a");
+        $userString =$userN . ', ' . $userBirthdayString. PHP_EOL;
+        fwrite($file, $userString);
+        fclose($file);
+      //  $newUser = new User($userN, $userB);
+        $users = User::getAllUsersFromStorage();
+       // $users[] = $newUser;
+        return $users;
     }
 }
