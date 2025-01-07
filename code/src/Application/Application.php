@@ -1,25 +1,33 @@
 <?php
 
-namespace Geekbrains\Application1;
+namespace Geekbrains\Application1\Application;
+
+use Geekbrains\Application1\Infrastructure\Config;
 
 final class Application
 {
-    private const APP_NAMESPACE = 'Geekbrains\Application1\Controllers\\';
+    private const APP_NAMESPACE = 'Geekbrains\Application1\Domain\Controllers\\';
 
     private string $controllerName;
     private string $methodName;
 
-    private static array $config;
+    public static Config $config;
 
-    public static function config(){
-        return Application::$config;
+    public function __construct(){
+        Application::$config = new Config();
     }
+
+    // private static array $configArr;
+
+    // public static function config(){
+    //     return Application::$configArr;
+    // }
 
     public function run()
     {
         // echo "<pre>";
         // print_r($_SERVER);
-        Application::$config = parse_ini_file('config.ini',true);
+        // Application::$configArr = parse_ini_file('./src/config/config.ini',true);
 
         // разбиваем адрес по символу слеша
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);

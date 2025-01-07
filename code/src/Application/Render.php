@@ -1,13 +1,13 @@
 <?php
 
-namespace Geekbrains\Application1;
+namespace Geekbrains\Application1\Application;
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
 class Render
 {
-    private string $viewFolder = '/src/Views/';
+    private string $viewFolder = '/src/domain/Views/';
     private FilesystemLoader $loader;
     private Environment $environment;
 

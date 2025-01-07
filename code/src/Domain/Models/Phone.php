@@ -1,6 +1,6 @@
 <?php 
 
-namespace Geekbrains\Application1\Models;
+namespace Geekbrains\Application1\Domain\Models;
 
 class Phone
 {
@@ -8,12 +8,10 @@ class Phone
 
     public function __construct()
     {
-     //   $this->phone = '+7844432423';
+        $this->phone = '+7844432423';
     }
 
     public function getPhone(){
-        var_dump($_GET);
-        $this->phone =$_GET['phone'] ?? '';
         return $this->phone;
     }
 
