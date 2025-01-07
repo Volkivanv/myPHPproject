@@ -3,6 +3,9 @@
 namespace Geekbrains\Application1\Infrastructure;
 
 use Geekbrains\Application1\Application\Application;
+
+
+
 use \PDO;
 
 class Storage{
@@ -17,5 +20,9 @@ class Storage{
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
                 )
         );
+    }
+
+    public function get(){
+        return $this->connection;
     }
 }

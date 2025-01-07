@@ -5,8 +5,9 @@ Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 
-#MySQL
+# MySQL config
 *.env
+# database
 db/
 
 # Dump file

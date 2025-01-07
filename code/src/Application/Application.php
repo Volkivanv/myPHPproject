@@ -4,6 +4,8 @@ namespace Geekbrains\Application1\Application;
 
 use Geekbrains\Application1\Infrastructure\Config;
 
+use Geekbrains\Application1\Infrastructure\Storage;
+
 final class Application
 {
     private const APP_NAMESPACE = 'Geekbrains\Application1\Domain\Controllers\\';
@@ -13,8 +15,11 @@ final class Application
 
     public static Config $config;
 
-    public function __construct(){
+    public static Storage $storage;
+    public function __construct()
+    {
         Application::$config = new Config();
+        Application::$storage = new Storage();
     }
 
     // private static array $configArr;
@@ -56,13 +61,13 @@ final class Application
                     []
                 );
             } else {
-                header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found", true, 404);
+                header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
                 header("Location: error-page.html");
-                 die();
+                die();
                 // return "Метод не существует";
             }
         } else {
-            header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found", true, 404);
+            header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
             header("Location: error-page.html");
             die();
             // return "Класс ". $this->controllerName. " не существует";
@@ -72,4 +77,6 @@ final class Application
         // проверяем метод на существование
         // вызываем метод, если он существует
     }
+
+    
 }
