@@ -1,0 +1,9 @@
+<h3>
+	<a href='/user/show/?id={{ user.getUserId() }}'>
+        id = {{ user.getUserId}} |
+		{{ user.getUserName() }} 
+		{{ user.getUserLastName() }}. День
+					рождения:
+		{{ user.getUserBirthday() | date('d.m.Y') }}
+	</a>
+</h3>

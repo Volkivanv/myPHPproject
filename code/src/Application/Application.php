@@ -63,14 +63,21 @@ final class Application
             } else {
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
                 header("Location: error-page.html");
+                // header("HTTP/1.1 404 Not Found");
+                // header("Location: /404.html");
+                echo("функция ". $this->methodName. " не существует");
                 die();
                 // return "Метод не существует";
             }
         } else {
             header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
             header("Location: error-page.html");
+            
+            echo("Класс ". $this->controllerName. " не существует");
+
+            // header("HTTP/1.1 404 Not Found");
+            // header("Location: /404.html");
             die();
-            // return "Класс ". $this->controllerName. " не существует";
         }
 
         // создаем экземпляр контроллера, если класс существует

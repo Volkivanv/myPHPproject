@@ -2,6 +2,7 @@
 
 namespace Geekbrains\Application1\Application;
 
+use Exception;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
@@ -30,6 +31,17 @@ class Render
         $templateVariables['navigation_template_name'] = 'navigation.twig';
         $templateVariables['sidebar_template_name'] = 'sidebar.twig';
         return $template->render($templateVariables);
+    }
+
+    public static function renderExceptionPage(Exception $exception): string {
+
+        $render = new Render();
+
+        return $render->renderPage(
+            'error.twig', [
+                'title' => 'Сообщение об ошибке',
+                'error_message' => $exception->getMessage()
+            ]);
     }
 }
 

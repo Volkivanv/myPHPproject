@@ -24,6 +24,15 @@ class User
         $this->idUser = $id_user;
     }
 
+    public function setUserId(int $id_user): void
+    {
+        $this->idUser = $id_user;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->idUser;
+    }
     public function setName(string $userName): void
     {
         $this->userName = $userName;
@@ -75,6 +84,20 @@ class User
     //     }
     // }
 
+    public static function getUserFromStorageById(int $id)
+    {
+        $sql = "SELECT * FROM users WHERE id_user = :id";
+        $handler = Application::$storage->get()->prepare($sql);
+        $handler->execute(['id' => $id]);
+        $result = $handler->fetch();
+        return  new User(
+            $result['user_name'],
+            $result['user_lastname'],
+            $result['user_birthday_timestamp'],
+            $result['id_user'],
+        );
+    }
+
     public static function getAllUsersFromStorage(): array
     {
         $sql = "SELECT * FROM users";
@@ -86,7 +109,8 @@ class User
             $user = new User(
                 $item['user_name'],
                 $item['user_lastname'],
-                $item['user_birthday_timestamp']
+                $item['user_birthday_timestamp'],
+                $item['id_user'],
             );
             $users[] = $user;
         }
@@ -142,5 +166,63 @@ class User
             'user_lastname' => $this->userLastName,
             'user_birthday' => $this->userBirthday
         ]);
+    }
+
+    public static function exists(int $id): bool
+    {
+        $sql = "SELECT count(id_user) as user_count FROM users WHERE id_user = :id_user";
+
+        $handler = Application::$storage->get()->prepare($sql);
+        $handler->execute([
+            'id_user' => $id
+        ]);
+
+        $result = $handler->fetchAll();
+
+        if (count($result) > 0 && $result[0]['user_count'] > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function updateUser(array $userDataArray): void
+    {
+        $sql = "UPDATE users SET ";
+
+        $counter = 0;
+        foreach ($userDataArray as $key => $value) {
+            $sql .= $key . " = :" . $key;
+
+            if ($counter != count($userDataArray) - 1) {
+                $sql .= ",";
+            }
+
+            $counter++;
+        }
+
+        $handler = Application::$storage->get()->prepare($sql);
+        $handler->execute($userDataArray);
+    }
+
+    // public static function deleteFromStorage(int $user_id): void
+    // {
+    //     $sql = "DELETE FROM users WHERE id_user = :id_user ";
+
+    //     $handler = Application::$storage->get()->prepare($sql);
+    //     $handler->execute(['id_user' => $user_id]);
+    // }
+
+    public static function deleteFromStorage(int $user_id): void
+    {
+        $sql = "DELETE users, payments FROM users INNER JOIN payments on users.id_user = payments.user_id WHERE users.id_user = :id_user ";
+       
+
+
+        $handler = Application::$storage->get()->prepare($sql);
+        
+        $handler->execute(['id_user' => $user_id]);
+        // var_dump($sql);
+        // die();
     }
 }
