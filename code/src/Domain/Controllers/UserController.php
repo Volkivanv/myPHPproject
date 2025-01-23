@@ -2,10 +2,13 @@
 
 namespace Geekbrains\Application1\Domain\Controllers;
 
+use Geekbrains\Application1\Application\Application;
 use Geekbrains\Application1\Application\Render;
 use Geekbrains\Application1\Domain\Models\User;
+use Geekbrains\Application1\Application\Auth;
+use Geekbrains\Application1\Domain\Controllers\AbstractController;
 
-class UserController
+class UserController extends AbstractController
 {
     // добавление в текстовый файл
     // public function actionSave()
@@ -24,6 +27,12 @@ class UserController
     //     );
     // }
 
+    protected array $actionsPermissions = [
+        'actonHash'=> ['admin', 'manager'],
+        'actionSave'=> ['admin'],
+ //       'actionAuth'=> ['admin', 'manager', null]
+    ];
+
     public function actionSave(): string
     {
         if (User::validateRequestData()) {
@@ -36,7 +45,7 @@ class UserController
                 'user-created.twig',
                 [
                     'title' => 'Пользователь создан',
-                    'message' => 'Создан пользователь ' . $user->getUserName() . $user->getUserLastName(),
+                    'message' => 'Создан пользователь ' . $user->getUserName() . ' ' . $user->getUserLastName(),
                 ]
             );
         } else {
@@ -101,7 +110,7 @@ class UserController
     {
         $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
 
-        
+
 
         if (User::exists($id)) {
             $user = User::getUserFromStorageById($id);
@@ -132,6 +141,58 @@ class UserController
             );
         } else {
             return Render::renderExceptionPage(new \Exception("Пользователь не существует"));
+        }
+    }
+
+    public function actionEdit(): string
+    {
+        $render = new Render();
+        return $render->renderPageWithForm(
+            'user-form.twig',
+            [
+                'title' => 'Форма создания пользователя'
+            ]
+        );
+    }
+
+    public function actionHash(): string
+    {
+        return Auth::getPasswordHash($_GET['pass_string']);
+    }
+
+    public function actionAuth(): string
+    {
+        $render = new Render();
+        return $render->renderPageWithForm(
+            'user-auth.twig',
+            [
+                'title' => 'Форма логина'
+            ]
+        );
+    }
+
+    public function actionLogin(): string
+    {
+        $result = false;
+        if (isset($_POST['login']) && isset($_POST['password'])) {
+            $result = Application::$auth->proceedAuth(
+                $_POST['login'],
+                $_POST['password']
+            );
+        }
+        if (!$result) {
+            $render = new Render();
+            return $render->renderPageWithForm(
+                'user-auth.twig',
+                [
+                    'title' => 'Форма логина',
+                    'auth-success' => false,
+                    'auth-error' => 'Неверные логин или пароль'
+                ]
+            );
+        } else {
+            header('Location: /');
+            return "";
         }
     }
 }

@@ -6,6 +6,10 @@ use Geekbrains\Application1\Infrastructure\Config;
 
 use Geekbrains\Application1\Infrastructure\Storage;
 
+use Geekbrains\Application1\Application\Auth;
+
+use Geekbrains\Application1\Domain\Controllers\AbstractController;
+
 final class Application
 {
     private const APP_NAMESPACE = 'Geekbrains\Application1\Domain\Controllers\\';
@@ -16,10 +20,13 @@ final class Application
     public static Config $config;
 
     public static Storage $storage;
+
+    public static Auth $auth;
     public function __construct()
     {
         Application::$config = new Config();
         Application::$storage = new Storage();
+        Application::$auth = new Auth();
     }
 
     // private static array $configArr;
@@ -30,6 +37,7 @@ final class Application
 
     public function run()
     {
+        session_start();
         // echo "<pre>";
         // print_r($_SERVER);
         // Application::$configArr = parse_ini_file('./src/config/config.ini',true);
@@ -56,24 +64,36 @@ final class Application
             $this->methodName = "action" . ucfirst($methodName);
             if (method_exists($this->controllerName, $this->methodName)) {
                 $controllerInstance = new $this->controllerName();
-                return call_user_func_array(
-                    [$controllerInstance, $this->methodName],
-                    []
-                );
+
+                if ($controllerInstance instanceof AbstractController) {
+                    if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
+                        return call_user_func_array(
+                            [$controllerInstance, $this->methodName],
+                            []
+                        );
+                    } else {
+                        return "Нет доступа к методу";
+                    }
+                } else {
+                    return call_user_func_array(
+                        [$controllerInstance, $this->methodName],
+                        []
+                    );
+                }
             } else {
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
                 header("Location: error-page.html");
                 // header("HTTP/1.1 404 Not Found");
                 // header("Location: /404.html");
-                echo("функция ". $this->methodName. " не существует");
+                echo ("функция " . $this->methodName . " не существует");
                 die();
                 // return "Метод не существует";
             }
         } else {
             header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
             header("Location: error-page.html");
-            
-            echo("Класс ". $this->controllerName. " не существует");
+
+            echo ("Класс " . $this->controllerName . " не существует");
 
             // header("HTTP/1.1 404 Not Found");
             // header("Location: /404.html");
@@ -85,5 +105,25 @@ final class Application
         // вызываем метод, если он существует
     }
 
-    
+    private function checkAccessToMethod(
+        AbstractController $controllerInstance,
+        string $methodName
+    ): bool {
+        $userRoles = $controllerInstance->getUserRoles();
+        $rules = $controllerInstance->getActionsPermissions($methodName);
+        $isAllowed = false;
+        var_dump($rules);
+        var_dump(empty($rules));
+        if (!empty($rules)) {
+            foreach ($rules as $rolePermission) {
+                foreach ($userRoles as $role) {
+                    if (in_array($role, $rolePermission)) {
+                        $isAllowed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return $isAllowed;
+    }
 }
