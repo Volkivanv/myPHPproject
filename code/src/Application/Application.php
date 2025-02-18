@@ -38,6 +38,8 @@ final class Application
     public function run()
     {
         session_start();
+        
+
         // echo "<pre>";
         // print_r($_SERVER);
         // Application::$configArr = parse_ini_file('./src/config/config.ini',true);
@@ -67,6 +69,7 @@ final class Application
 
                 if ($controllerInstance instanceof AbstractController) {
                     if ($this->checkAccessToMethod($controllerInstance, $this->methodName)) {
+                        $_SESSION['counter']++;
                         return call_user_func_array(
                             [$controllerInstance, $this->methodName],
                             []
@@ -111,16 +114,14 @@ final class Application
     ): bool {
         $userRoles = $controllerInstance->getUserRoles();
         $rules = $controllerInstance->getActionsPermissions($methodName);
-        $isAllowed = false;
-        var_dump($rules);
-        var_dump(empty($rules));
+
+        $rules[] = 'user';
+        $isAllowed = false; //В лекции был false
         if (!empty($rules)) {
             foreach ($rules as $rolePermission) {
-                foreach ($userRoles as $role) {
-                    if (in_array($role, $rolePermission)) {
-                        $isAllowed = true;
-                        break;
-                    }
+                if (in_array($rolePermission, $userRoles)) {
+                    $isAllowed = true;
+                    break;
                 }
             }
         }

@@ -8,6 +8,7 @@ use Geekbrains\Application1\Domain\Models\User;
 use Geekbrains\Application1\Application\Auth;
 use Geekbrains\Application1\Domain\Controllers\AbstractController;
 
+
 class UserController extends AbstractController
 {
     // добавление в текстовый файл
@@ -28,9 +29,12 @@ class UserController extends AbstractController
     // }
 
     protected array $actionsPermissions = [
-        'actonHash'=> ['admin', 'manager'],
-        'actionSave'=> ['admin'],
- //       'actionAuth'=> ['admin', 'manager', null]
+        'actonHash' => ['admin', 'manager'],
+        'actionSave' => ['admin'],
+        'actionEdit' => ['admin'],
+        //   'actionAuth'=> ['admin', 'manager', null],
+        'actionIndex' => ['admin'],
+        'actionLogout' => ['admin'],
     ];
 
     public function actionSave(): string
@@ -49,29 +53,21 @@ class UserController extends AbstractController
                 ]
             );
         } else {
-            return Render::renderExceptionPage(new \Exception("Переданные данные некорректны"));
+            throw new \Exception("Переданные данные некорректны");
         }
     }
 
     public function actionUpdate(): string
     {
-        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
+        $id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int)$_POST['id'] : 0;
         if (User::exists($id)) {
-            $user = new User();
+            $user = new User(); //Active recort
             $user->setUserId($id);
 
-            $arrayData = [];
-
-            if (isset($_GET['name']))
-                $arrayData['user_name'] = $_GET['name'];
-
-            if (isset($_GET['lastname'])) {
-                $arrayData['user_lastname'] = $_GET['lastname'];
-            }
-
-            $user->updateUser($arrayData);
+            $user->updateUser(User::setArrayDataFromRequest());
+            // var_dump($user);
         } else {
-            return Render::renderExceptionPage(new \Exception("Пользователь не существует"));
+            return new \Exception("Пользователь не существует");
         }
 
         $render = new Render();
@@ -123,7 +119,7 @@ class UserController extends AbstractController
                 ]
             );
         } else {
-            return Render::renderExceptionPage(new \Exception("Пользователь не существует"));
+            throw new \Exception("Пользователь не существует");
         }
     }
 
@@ -140,7 +136,7 @@ class UserController extends AbstractController
                 []
             );
         } else {
-            return Render::renderExceptionPage(new \Exception("Пользователь не существует"));
+            throw new \Exception("Пользователь не существует");
         }
     }
 
@@ -153,6 +149,29 @@ class UserController extends AbstractController
                 'title' => 'Форма создания пользователя'
             ]
         );
+    }
+
+    public function actionPrepare(): string
+    {
+
+
+        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
+
+
+
+        if (User::exists($id)) {
+            $user = User::getUserFromStorageById($id);
+            $render = new Render();
+            return $render->renderPageWithForm(
+                'user-update.twig',
+                [
+                    'title' => 'Форма обновления пользователя',
+                    'user' => $user
+                ]
+            );
+        } else {
+            throw new \Exception("Пользователь не существует");
+        }
     }
 
     public function actionHash(): string
@@ -174,7 +193,16 @@ class UserController extends AbstractController
     public function actionLogin(): string
     {
         $result = false;
+        $flagChecked = false;
         if (isset($_POST['login']) && isset($_POST['password'])) {
+            if (isset($_POST["user-remember"])) {
+                if ($_POST["user-remember"] === "remember") {
+                    $_SESSION['random_bytes'] = random_bytes(200);
+                    setcookie('random_bytes', $_SESSION['random_bytes'], time() + 24*3600, '/');
+                 //   var_dump($_SESSION['random_bytes']);
+                }
+            }
+
             $result = Application::$auth->proceedAuth(
                 $_POST['login'],
                 $_POST['password']
@@ -191,8 +219,32 @@ class UserController extends AbstractController
                 ]
             );
         } else {
+            if (isset($_SESSION['random_bytes'])) {
+                $user = new User();
+                $user->setUserId($_SESSION['id_user']);
+                $user->setRandomBytes($_SESSION['random_bytes']);
+
+                setcookie('id_user', $_SESSION['id_user'], time() + 24*3600, '/');
+                
+            }
             header('Location: /');
             return "";
         }
+    }
+
+    public function actionExit()
+    {
+        setcookie('id_user', "", time() - 3600, '/');
+        
+        setcookie('random_bytes', "", time() - 3600, '/');
+        unset($_SESSION['user_name']);
+        unset($_SESSION['user_lastname']);
+        unset($_SESSION['id_user']);
+        unset($_SESSION['random_bytes']);
+
+
+        //session_destroy();
+        $render = new Render();
+        return $render->renderPage('page-index.twig', ['title' => 'Главная страница']);
     }
 }

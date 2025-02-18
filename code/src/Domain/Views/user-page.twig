@@ -6,4 +6,5 @@
 					рождения:
 		{{ user.getUserBirthday() | date('d.m.Y') }}
 	</a>
+	<a href='/user/delete/?id={{ user.getUserId() }}'>Хотите удалить?</a>
 </h3>

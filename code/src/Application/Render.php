@@ -30,9 +30,12 @@ class Render
         $templateVariables['footer_template_name'] = 'footer.twig';
         $templateVariables['navigation_template_name'] = 'navigation.twig';
         $templateVariables['sidebar_template_name'] = 'sidebar.twig';
+        $templateVariables['counter'] = $_SESSION['counter'];
 
         if (isset($_SESSION['user_name'])) {
             $templateVariables['user_authorized'] = true;
+            $templateVariables['authorized_name'] = $_SESSION['user_name'];
+            $templateVariables['authorized_lastname_name'] = $_SESSION['user_lastname'];
         }
 
         return $template->render($templateVariables);

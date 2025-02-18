@@ -7,5 +7,7 @@
 			рождения:
 			{{ user.getUserBirthday() | date('d.m.Y') }}
         </a></li>
+		<a href ='/user/prepare/?id={{ user.getUserId() }}'>обновить</a>
+		<a href ='/user/show/?id={{ user.getUserId() }}'>удалить</a>
 	{% endfor %}
 </ul>

@@ -4,7 +4,8 @@ namespace Geekbrains\Application1\Domain\Controllers;
 
 use Geekbrains\Application1\Application\Render;
 use Geekbrains\Application1\Domain\Models\SiteInfo;
-class SiteController
+use Geekbrains\Application1\Domain\Controllers\Controller;
+class SiteController extends Controller
 {
     public function actionIndex(){
 

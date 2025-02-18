@@ -146,6 +146,14 @@ class User
         )) {
             $result = false;
         }
+        //Проверка регулярными выражениями
+        if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['name'])) {
+            return false;
+        }
+
+        if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['lastname'])) {
+            return false;
+        }
 
         if (!preg_match('/^(\d{2}-\d{2}-\d{4})$/', $_POST['birthday'])) {
             return false;
@@ -157,6 +165,30 @@ class User
             $result = false;
         }
         return $result;
+    }
+
+    public static function setArrayDataFromRequest()
+    {
+        $arrayData = [];
+
+        if (isset($_POST['name']))
+            $arrayData['user_name'] = htmlspecialchars($_POST['name']);
+
+        if (isset($_POST['lastname'])) {
+            $arrayData['user_lastname'] = htmlspecialchars($_POST['lastname']);
+        }
+
+        if (isset($_POST['birthday'])) {
+            $arrayData['user_birthday_timestamp'] = strtotime($_POST['birthday']);
+        }
+        return $arrayData;
+    }
+
+    public function setRandomBytes($randomBytes)
+    {
+        $arrayData = [];
+        $arrayData['random_bytes'] = $randomBytes;
+        $this->updateUser($arrayData);
     }
 
     public function setParamsFromRequestData(): void
@@ -212,30 +244,45 @@ class User
             $counter++;
         }
 
+        $sql .= " WHERE id_user = " . $this->idUser;
+     //  var_dump($sql);
+
         $handler = Application::$storage->get()->prepare($sql);
+
         $handler->execute($userDataArray);
     }
 
-    // public static function deleteFromStorage(int $user_id): void
-    // {
-    //     $sql = "DELETE FROM users WHERE id_user = :id_user ";
-
-    //     $handler = Application::$storage->get()->prepare($sql);
-    //     $handler->execute(['id_user' => $user_id]);
-    // }
 
     public static function deleteFromStorage(int $user_id): void
     {
-        $sql = "DELETE users, payments FROM users INNER JOIN payments on users.id_user = payments.user_id WHERE users.id_user = :id_user";
+        // $sql = "DELETE users, payments FROM users INNER JOIN payments on users.id_user = payments.user_id WHERE users.id_user = :id_user";
+
+        $sql = "DELETE FROM users WHERE users.id_user = :id_user";
 
 
 
         $handler = Application::$storage->get()->prepare($sql);
 
         $handler->execute(['id_user' => $user_id]);
-        // var_dump($sql);
-        // die();
     }
 
-    
+    public static function getUserRoles(): array
+    {
+        $roles = [];
+        $roles[] = 'user';
+
+
+        if (isset($_SESSION['id_user'])) {
+            $rolesSql = "SELECT * FROM user_roles WHERE id_user = :id";
+            $handler = Application::$storage->get()->prepare($rolesSql);
+            $handler->execute(['id' => $_SESSION['id_user']]);
+            $result = $handler->fetchAll();
+            if (!empty($result)) {
+                foreach ($result as $role) {
+                    $roles[] = $role['role'];
+                }
+            }
+        }
+        return $roles;
+    }
 }
