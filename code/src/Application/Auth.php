@@ -22,9 +22,9 @@ class Auth
             $password,
             $result[0]['password_hash']
         )) {
-            $_SESSION['user_name'] = $result[0]['user_name'];
-            $_SESSION['user_lastname'] = $result[0]['user_lastname'];
-            $_SESSION['id_user'] = $result[0]['id_user'];
+            $_SESSION['auth']['user_name'] = $result[0]['user_name'];
+            $_SESSION['auth']['user_lastname'] = $result[0]['user_lastname'];
+            $_SESSION['auth']['id_user'] = $result[0]['id_user'];
             //fingerprint
             return true;
         } else {
@@ -44,9 +44,9 @@ class Auth
             $result = $handler->fetchAll();
 
             if (!empty($result) && ($_COOKIE['random_bytes'] == $result[0]['random_bytes'])) {
-                $_SESSION['user_name'] = $result[0]['user_name'];
-                $_SESSION['user_lastname'] = $result[0]['user_lastname'];
-                $_SESSION['id_user'] = $result[0]['id_user'];
+                $_SESSION['auth']['user_name'] = $result[0]['user_name'];
+                $_SESSION['auth']['user_lastname'] = $result[0]['user_lastname'];
+                $_SESSION['auth']['id_user'] = $result[0]['id_user'];
                 //fingerprint
                 var_dump('мы автоматически авторизовались');
                 return true;

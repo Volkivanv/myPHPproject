@@ -2,10 +2,15 @@
 <ul id="navigation">
 	{% for user in users %}
 		<li><a href ='/user/show/?id={{ user.getUserId() }}'>
-		{{ user.getUserName() }}
+			{{ user.getUserName() }}
 			{{ user.getUserLastName() }}. День
 			рождения:
-			{{ user.getUserBirthday() | date('d.m.Y') }}
+			{% if user.getUserBirthday() is empty %}
+				<b>не установлен</b>
+			{% else %}
+				{{ user.getUserBirthday() | date('d.m.Y') }}
+			{% endif %}
+			
         </a></li>
 		<a href ='/user/prepare/?id={{ user.getUserId() }}'>обновить</a>
 		<a href ='/user/show/?id={{ user.getUserId() }}'>удалить</a>

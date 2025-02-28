@@ -14,11 +14,14 @@ class User
 
     private ?int $userBirthday;
 
+    private ?string $login;
+
     private static string $storageAddress = '/storage/birthdays.txt';
 
-    public function __construct(string $name = null, string $lastName = null, int $birthday = null, int $id_user = null)
+    public function __construct(string $name = null, string $login = null, string $lastName = null, int $birthday = null, int $id_user = null)
     {
         $this->userName = $name;
+        $this->login = $login;
         $this->userLastName = $lastName;
         $this->userBirthday = $birthday;
         $this->idUser = $id_user;
@@ -42,6 +45,15 @@ class User
         return $this->userName;
     }
 
+    public function setLogin(string $userLogin): void
+    {
+        $this->login = $userLogin;
+    }
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
     public function setLastName(string $userLastName): void
     {
         $this->userLastName = $userLastName;
@@ -50,7 +62,7 @@ class User
     {
         return $this->userLastName;
     }
-    public function getUserBirthday(): int
+    public function getUserBirthday(): ?int
     {
         return $this->userBirthday;
     }
@@ -58,31 +70,7 @@ class User
     {
         $this->userBirthday = strtotime($birthdayString);
     }
-    // public static function getAllUsersFromStorage(): array|false
-    // {
-    //     $address = $_SERVER['DOCUMENT_ROOT'] . User::$storageAddress;
-    //     if (file_exists($address) && is_readable($address)) {
-    //         $file = fopen($address, "r");
-    //         $users = [];
-    //         while (!feof($file)) {
-    //             $userString = fgets($file);
-    //             if (strlen($userString) == 0) {
-    //                 break;
-    //             }
-    //             $userArray = explode(",", $userString);
 
-    //             $user = new User(
-    //                 $userArray[0]
-    //             );
-    //             $user->setBirthdayFromString($userArray[1]);
-    //             $users[] = $user;
-    //         }
-    //         fclose($file);
-    //         return $users;
-    //     } else {
-    //         return false;
-    //     }
-    // }
 
     public static function getUserFromStorageById(int $id)
     {
@@ -92,6 +80,7 @@ class User
         $result = $handler->fetch();
         return  new User(
             $result['user_name'],
+            $result['login'],
             $result['user_lastname'],
             $result['user_birthday_timestamp'],
             $result['id_user'],
@@ -108,6 +97,7 @@ class User
         foreach ($result as $item) {
             $user = new User(
                 $item['user_name'],
+                $item['login'],
                 $item['user_lastname'],
                 $item['user_birthday_timestamp'],
                 $item['id_user'],
@@ -140,6 +130,7 @@ class User
         $result = true;
 
         if (!(
+            isset($_POST['login']) && !empty($_POST['login']) &&
             isset($_POST['name']) && !empty($_POST['name']) &&
             isset($_POST['lastname']) && !empty($_POST['lastname']) &&
             isset($_POST['birthday']) && !empty($_POST['birthday'])
@@ -147,16 +138,20 @@ class User
             $result = false;
         }
         //Проверка регулярными выражениями
-        if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['name'])) {
-            return false;
-        }
+        // if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['name'])) {
+        //     return false;
+        // }
 
-        if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['lastname'])) {
-            return false;
+        // if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['lastname'])) {
+        //     return false;
+        // }
+
+        if (preg_match('/<([^>]+)>/', $_POST['login']) || preg_match('/<([^>]+)>/', $_POST['name']) || preg_match('/<([^>]+)>/', $_POST['lastname'])) {
+            $result = false;
         }
 
         if (!preg_match('/^(\d{2}-\d{2}-\d{4})$/', $_POST['birthday'])) {
-            return false;
+            $result = false;
         }
 
         if (
@@ -170,6 +165,9 @@ class User
     public static function setArrayDataFromRequest()
     {
         $arrayData = [];
+
+        if (isset($_POST['login']))
+            $arrayData['login'] = htmlspecialchars($_POST['login']);
 
         if (isset($_POST['name']))
             $arrayData['user_name'] = htmlspecialchars($_POST['name']);
@@ -193,6 +191,7 @@ class User
 
     public function setParamsFromRequestData(): void
     {
+        $this->login = htmlspecialchars($_POST['login']);
         $this->userName = htmlspecialchars($_POST['name']);
         $this->userLastName = htmlspecialchars($_POST['lastname']);
         $this->setBirthdayFromString($_POST['birthday']);
@@ -201,10 +200,11 @@ class User
     public function saveToStorage()
     {
         $storage = new Storage();
-        $sql = "INSERT INTO users(user_name, user_lastname,
-        user_birthday_timestamp) VALUES (:user_name, :user_lastname, :user_birthday)";
+        $sql = "INSERT INTO users(login, user_name, user_lastname,
+        user_birthday_timestamp) VALUES (:login, :user_name, :user_lastname, :user_birthday)";
         $handler = $storage->get()->prepare($sql);
         $handler->execute([
+            'login' => $this->login,
             'user_name' => $this->userName,
             'user_lastname' => $this->userLastName,
             'user_birthday' => $this->userBirthday
@@ -245,7 +245,7 @@ class User
         }
 
         $sql .= " WHERE id_user = " . $this->idUser;
-     //  var_dump($sql);
+        //  var_dump($sql);
 
         $handler = Application::$storage->get()->prepare($sql);
 
@@ -272,10 +272,10 @@ class User
         $roles[] = 'user';
 
 
-        if (isset($_SESSION['id_user'])) {
+        if (isset($_SESSION['auth']['id_user'])) {
             $rolesSql = "SELECT * FROM user_roles WHERE id_user = :id";
             $handler = Application::$storage->get()->prepare($rolesSql);
-            $handler->execute(['id' => $_SESSION['id_user']]);
+            $handler->execute(['id' => $_SESSION['auth']['id_user']]);
             $result = $handler->fetchAll();
             if (!empty($result)) {
                 foreach ($result as $role) {
@@ -285,4 +285,30 @@ class User
         }
         return $roles;
     }
+
+    // public static function getAllUsersFromStorage(): array|false
+    // {
+    //     $address = $_SERVER['DOCUMENT_ROOT'] . User::$storageAddress;
+    //     if (file_exists($address) && is_readable($address)) {
+    //         $file = fopen($address, "r");
+    //         $users = [];
+    //         while (!feof($file)) {
+    //             $userString = fgets($file);
+    //             if (strlen($userString) == 0) {
+    //                 break;
+    //             }
+    //             $userArray = explode(",", $userString);
+
+    //             $user = new User(
+    //                 $userArray[0]
+    //             );
+    //             $user->setBirthdayFromString($userArray[1]);
+    //             $users[] = $user;
+    //         }
+    //         fclose($file);
+    //         return $users;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 }

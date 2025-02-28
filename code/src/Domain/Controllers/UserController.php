@@ -146,7 +146,9 @@ class UserController extends AbstractController
         return $render->renderPageWithForm(
             'user-form.twig',
             [
-                'title' => 'Форма создания пользователя'
+                'title' => 'Форма создания пользователя',
+                'action_user' => '/user/save/',
+                'button_name' => 'Создать'
             ]
         );
     }
@@ -163,10 +165,12 @@ class UserController extends AbstractController
             $user = User::getUserFromStorageById($id);
             $render = new Render();
             return $render->renderPageWithForm(
-                'user-update.twig',
+                'user-form.twig',
                 [
                     'title' => 'Форма обновления пользователя',
-                    'user' => $user
+                    'user' => $user,
+                    'action_user' => '/user/update/',
+                    'button_name' => 'Обновить'
                 ]
             );
         } else {
@@ -176,7 +180,12 @@ class UserController extends AbstractController
 
     public function actionHash(): string
     {
-        return Auth::getPasswordHash($_GET['pass_string']);
+        if (isset($_GET['pass_string']) && !empty($_GET['pass_string'])) {
+            return Auth::getPasswordHash($_GET['pass_string']);
+        } else {
+            throw new \Exception("Невозможно сгенерировать хэш. Не передан
+            пароль");
+        }
     }
 
     public function actionAuth(): string
@@ -198,8 +207,7 @@ class UserController extends AbstractController
             if (isset($_POST["user-remember"])) {
                 if ($_POST["user-remember"] === "remember") {
                     $_SESSION['random_bytes'] = random_bytes(200);
-                    setcookie('random_bytes', $_SESSION['random_bytes'], time() + 24*3600, '/');
-                 //   var_dump($_SESSION['random_bytes']);
+                    setcookie('random_bytes', $_SESSION['random_bytes'], time() + 24 * 3600, '/');
                 }
             }
 
@@ -221,11 +229,10 @@ class UserController extends AbstractController
         } else {
             if (isset($_SESSION['random_bytes'])) {
                 $user = new User();
-                $user->setUserId($_SESSION['id_user']);
+                $user->setUserId($_SESSION['auth']['id_user']);
                 $user->setRandomBytes($_SESSION['random_bytes']);
 
-                setcookie('id_user', $_SESSION['id_user'], time() + 24*3600, '/');
-                
+                setcookie('id_user', $_SESSION['auth']['id_user'], time() + 24 * 3600, '/');
             }
             header('Location: /');
             return "";
@@ -235,16 +242,12 @@ class UserController extends AbstractController
     public function actionExit()
     {
         setcookie('id_user', "", time() - 3600, '/');
-        
+
         setcookie('random_bytes', "", time() - 3600, '/');
-        unset($_SESSION['user_name']);
-        unset($_SESSION['user_lastname']);
-        unset($_SESSION['id_user']);
-        unset($_SESSION['random_bytes']);
+        session_destroy();
+        unset($_SESSION['auth']);
 
-
-        //session_destroy();
-        $render = new Render();
-        return $render->renderPage('page-index.twig', ['title' => 'Главная страница']);
+        header("Location: /");
+        die();
     }
 }

@@ -32,10 +32,17 @@ class Render
         $templateVariables['sidebar_template_name'] = 'sidebar.twig';
         $templateVariables['counter'] = $_SESSION['counter'];
 
-        if (isset($_SESSION['user_name'])) {
+        // // временный код
+        // ob_start();
+        // \xdebug_info();
+        // $xdebug = ob_get_clean();
+        // $templateVariables['xdebug'] = $xdebug;
+        // // ------
+
+        if (isset($_SESSION['auth']['user_name'])) {
             $templateVariables['user_authorized'] = true;
-            $templateVariables['authorized_name'] = $_SESSION['user_name'];
-            $templateVariables['authorized_lastname_name'] = $_SESSION['user_lastname'];
+            $templateVariables['authorized_name'] = $_SESSION['auth']['user_name'];
+            $templateVariables['authorized_lastname_name'] = $_SESSION['auth']['user_lastname'];
         }
 
         return $template->render($templateVariables);

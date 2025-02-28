@@ -28,6 +28,14 @@ class ComposerStaticInit15a6ced4e3dd7d81c24ad819083814f5
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
         'G' => 
         array (
             'Geekbrains\\Application1\\' => 24,
@@ -50,6 +58,14 @@ class ComposerStaticInit15a6ced4e3dd7d81c24ad819083814f5
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'Geekbrains\\Application1\\' => 
         array (
