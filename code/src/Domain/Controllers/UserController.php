@@ -29,12 +29,12 @@ class UserController extends AbstractController
     // }
 
     protected array $actionsPermissions = [
-        'actonHash' => ['admin', 'manager'],
+        'actonHash' => ['user'],
         'actionSave' => ['admin'],
         'actionEdit' => ['admin'],
-        //   'actionAuth'=> ['admin', 'manager', null],
-        'actionIndex' => ['admin'],
-        'actionLogout' => ['admin'],
+        'actionAuth'=> ['user'],
+        'actionIndex' => ['user'],
+        'actionLogout' => ['user'],
     ];
 
     public function actionSave(): string
@@ -82,6 +82,7 @@ class UserController extends AbstractController
     public function actionIndex()
     {
         $users = User::getAllUsersFromStorage();
+    //    var_dump($users);
         $render = new Render();
         if (!$users) {
             return $render->renderPage(
@@ -142,40 +143,33 @@ class UserController extends AbstractController
 
     public function actionEdit(): string
     {
+
+        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
+
+        $action = '/user/save/';
+        $button_name = 'Создать';
+        $title = 'Форма создания пользователя';
+        $id_visibility = 'hidden';
+
+        if (User::exists($id)) {
+            $user = User::getUserFromStorageById($id);
+            $action = '/user/update/';
+            $button_name = 'Обновить';
+            $title = 'Форма обновления пользователя';
+            $id_visibility = 'visible';
+
+        } 
         $render = new Render();
         return $render->renderPageWithForm(
             'user-form.twig',
             [
-                'title' => 'Форма создания пользователя',
-                'action_user' => '/user/save/',
-                'button_name' => 'Создать'
+                'title' => $title,
+                'user' => $user ?? [],
+                'action_user' => $action,
+                'button_name' => $button_name,
+                'id_visibility' => $id_visibility
             ]
         );
-    }
-
-    public function actionPrepare(): string
-    {
-
-
-        $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
-
-
-
-        if (User::exists($id)) {
-            $user = User::getUserFromStorageById($id);
-            $render = new Render();
-            return $render->renderPageWithForm(
-                'user-form.twig',
-                [
-                    'title' => 'Форма обновления пользователя',
-                    'user' => $user,
-                    'action_user' => '/user/update/',
-                    'button_name' => 'Обновить'
-                ]
-            );
-        } else {
-            throw new \Exception("Пользователь не существует");
-        }
     }
 
     public function actionHash(): string
@@ -206,6 +200,7 @@ class UserController extends AbstractController
         if (isset($_POST['login']) && isset($_POST['password'])) {
             if (isset($_POST["user-remember"])) {
                 if ($_POST["user-remember"] === "remember") {
+                 //   $_SESSION['random_bytes'] = Application::$auth->generateToken();
                     $_SESSION['random_bytes'] = random_bytes(200);
                     setcookie('random_bytes', $_SESSION['random_bytes'], time() + 24 * 3600, '/');
                 }
@@ -241,6 +236,10 @@ class UserController extends AbstractController
 
     public function actionExit()
     {
+        $id = $_SESSION['auth']['id_user'];
+        $user = User::getUserFromStorageById($id);
+        $user->destroyRandomBytes();
+        
         setcookie('id_user', "", time() - 3600, '/');
 
         setcookie('random_bytes', "", time() - 3600, '/');

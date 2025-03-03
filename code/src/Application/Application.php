@@ -40,7 +40,7 @@ final class Application
         Application::$logger = new Logger('application_logger');
         Application::$logger->pushHandler(
             new StreamHandler(
-                $_SERVER['DOCUMENT_ROOT'] . "/log/" . Application::$config->get()['log']['LOGS_FILE'] . "-" .date("Y-m-d") . ".log",
+                $_SERVER['DOCUMENT_ROOT'] . "/log/" . Application::$config->get()['log']['LOGS_FILE'] . "-" . date("Y-m-d") . ".log",
                 Level::Debug
             )
         );
@@ -53,14 +53,41 @@ final class Application
     //     return Application::$configArr;
     // }
 
+    public function runApp()
+    {
+        $memory_start = memory_get_usage();
+
+        $result = $this->run();
+        //добавить if config
+        if (Application::$config->get()['log']['DB_MEMORY_LOG']) {
+            $memory_end = memory_get_usage();
+
+
+            $this->saveMemoryLog($memory_end - $memory_start);
+            // echo "<h4>Потреблено " . ($memory_end - $memory_start) / 1024 / 1024 . " МБ памяти</h4>";
+
+        }
+
+        return $result;
+    }
+
+    private function saveMemoryLog(int $memory)
+    {
+        $logSql = "INSERT INTO memory_log(`user_agent`, `log_datetime`, `url`, `memory_volume`) VALUES (:user_agent, :log_datetime, :url, :memory_volume)";
+
+        $handler = Application::$storage->get()->prepare($logSql);
+        $handler->execute([
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+            'log_datetime' => date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']),
+            'url' => $_SERVER['REQUEST_URI'],
+            'memory_volume' => $memory
+        ]);
+    }
+
     public function run()
     {
         session_start();
-
-
-        // echo "<pre>";
-        // print_r($_SERVER);
-        // Application::$configArr = parse_ini_file('./src/config/config.ini',true);
+        //Application::$auth->cookieAuth();
 
         // разбиваем адрес по символу слеша
         $routeArray = explode('/', $_SERVER['REQUEST_URI']);
@@ -137,7 +164,7 @@ final class Application
         $userRoles = $controllerInstance->getUserRoles();
         $rules = $controllerInstance->getActionsPermissions($methodName);
 
-        $rules[] = 'user';
+        $rules[] = 'admin';
         $isAllowed = false; //В лекции был false
         if (!empty($rules)) {
             foreach ($rules as $rolePermission) {

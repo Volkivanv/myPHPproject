@@ -1,6 +1,6 @@
-<form action={{ $action_user }} method="post">
+<form action={{ action_user }} method="post">
 	<input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token }}">
-	<p>
+	<p style="visibility: {{ id_visibility }}">
 		<label for="user-id">id:</label>
 		<input id="user-id" type="text" name="id"
         value={{ user.getUserId() }}>

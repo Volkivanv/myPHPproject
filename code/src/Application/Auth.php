@@ -9,6 +9,11 @@ class Auth
         return password_hash($_GET['pass_string'], PASSWORD_BCRYPT);
     }
 
+    public function generateToken(){
+        $bytes = random_bytes(16);
+        return bin2hex($bytes);
+    }
+
 
     public function proceedAuth(string $login, string $password): bool
     {

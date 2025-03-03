@@ -1,5 +1,5 @@
 <p>Список пользователей в хранилище</p>
-<ul id="navigation">
+<ul id="navigation"  class="user_list">
 	{% for user in users %}
 		<li><a href ='/user/show/?id={{ user.getUserId() }}'>
 			{{ user.getUserName() }}
@@ -12,7 +12,7 @@
 			{% endif %}
 			
         </a></li>
-		<a href ='/user/prepare/?id={{ user.getUserId() }}'>обновить</a>
+		<a href ='/user/edit/?id={{ user.getUserId() }}'>обновить</a>
 		<a href ='/user/show/?id={{ user.getUserId() }}'>удалить</a>
 	{% endfor %}
 </ul>

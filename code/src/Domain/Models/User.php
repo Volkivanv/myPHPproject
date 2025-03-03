@@ -127,7 +127,7 @@ class User
 
     public static function validateRequestData(): bool
     {
-        $result = true;
+     //   $result = true;
 
         if (!(
             isset($_POST['login']) && !empty($_POST['login']) &&
@@ -135,7 +135,7 @@ class User
             isset($_POST['lastname']) && !empty($_POST['lastname']) &&
             isset($_POST['birthday']) && !empty($_POST['birthday'])
         )) {
-            $result = false;
+            return false;
         }
         //Проверка регулярными выражениями
         // if (!preg_match('/^[a-zа-яёA-ZА-ЯЁ]+$/', $_POST['name'])) {
@@ -147,19 +147,19 @@ class User
         // }
 
         if (preg_match('/<([^>]+)>/', $_POST['login']) || preg_match('/<([^>]+)>/', $_POST['name']) || preg_match('/<([^>]+)>/', $_POST['lastname'])) {
-            $result = false;
+            return false;
         }
 
         if (!preg_match('/^(\d{2}-\d{2}-\d{4})$/', $_POST['birthday'])) {
-            $result = false;
+            return false;
         }
 
         if (
             !isset($_SESSION['csrf_token']) || $_SESSION['csrf_token'] != $_POST['csrf_token']
         ) {
-            $result = false;
+            return false;
         }
-        return $result;
+        return true;
     }
 
     public static function setArrayDataFromRequest()
@@ -186,6 +186,13 @@ class User
     {
         $arrayData = [];
         $arrayData['random_bytes'] = $randomBytes;
+        $this->updateUser($arrayData);
+    }
+
+    public function destroyRandomBytes()
+    {
+        $arrayData = [];
+        $arrayData['random_bytes'] = random_bytes(200);
         $this->updateUser($arrayData);
     }
 
