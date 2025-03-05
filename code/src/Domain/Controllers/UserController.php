@@ -35,6 +35,7 @@ class UserController extends AbstractController
         'actionAuth'=> ['user'],
         'actionIndex' => ['user'],
         'actionLogout' => ['user'],
+        'actionLogin' => ['user'],
     ];
 
     public function actionSave(): string
