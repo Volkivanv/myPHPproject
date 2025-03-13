@@ -1,7 +1,7 @@
-{% if not auth-success %}
-	{% if  auth-error != 0  %}
-		{{ auth-error }}
-	{% endif %}
+{% if not auth_success %}
+	{# {% if  auth-error != 0  %} #}
+		{{ auth_error }}
+	{# {% endif %} #}
 
 {% endif %}
 <form action="/user/login/" method="post">

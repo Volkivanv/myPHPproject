@@ -1,9 +1,9 @@
 {% if not user_authorized %}
 	<p>
-		<a href="/user/auth/">Вход в систему</a>
+		<a href="/user/auth/" class ="btn btn-primary">Войти</a>
 	</p>
 {% else %}
 	<p>
-		<a href="/user/exit/">Выйти из системы</a>
+		<a href="/user/exit/" class ="btn btn-primary">Выйти</a>
 	</p>
 {% endif %}

@@ -87,9 +87,14 @@ class User
         );
     }
 
-    public static function getAllUsersFromStorage(): array
+    public static function getAllUsersFromStorage(?int $limit = null): array
     {
         $sql = "SELECT * FROM users";
+
+        if(isset($limit)&&($limit > 0)){
+            $sql .= " WHERE id_user > " . (int)$limit;
+        }
+
         $handler = Application::$storage->get()->prepare($sql);
         $handler->execute();
         $result = $handler->fetchAll();
@@ -133,7 +138,8 @@ class User
             isset($_POST['login']) && !empty($_POST['login']) &&
             isset($_POST['name']) && !empty($_POST['name']) &&
             isset($_POST['lastname']) && !empty($_POST['lastname']) &&
-            isset($_POST['birthday']) && !empty($_POST['birthday'])
+            isset($_POST['birthday']) && !empty($_POST['birthday']) 
+        //  && isset($_POST['password']) && !empty($_POST['password'])
         )) {
             return false;
         }
@@ -291,6 +297,38 @@ class User
             }
         }
         return $roles;
+    }
+
+    public function getUserDataAsArray(): array
+    {
+        $userArray = [
+            'id' => $this->idUser,
+            'username' => $this->userName,
+            'userlastname' => $this->userLastName,
+            'userbirthday' => date('d.m.Y', $this->userBirthday),
+        ];
+        return $userArray;
+    }
+
+    public static function isAdmin(?int $idUser): bool {
+        if($idUser > 0) {
+            $sql = "SELECT role FROM user_roles WHERE role = 'admin' AND id_user = :id_user";
+
+            $handler = Application::$storage->get()->prepare($sql);
+            $handler->execute([
+                'id_user' => $idUser
+            ]);
+            
+            $result = $handler->fetchAll();
+            
+            if(count($result) > 0){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     // public static function getAllUsersFromStorage(): array|false

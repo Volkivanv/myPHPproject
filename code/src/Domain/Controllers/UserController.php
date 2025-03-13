@@ -32,7 +32,7 @@ class UserController extends AbstractController
         'actonHash' => ['user'],
         'actionSave' => ['admin'],
         'actionEdit' => ['admin'],
-        'actionAuth'=> ['user'],
+        'actionAuth' => ['user'],
         'actionIndex' => ['user'],
         'actionLogout' => ['user'],
         'actionLogin' => ['user'],
@@ -83,7 +83,7 @@ class UserController extends AbstractController
     public function actionIndex()
     {
         $users = User::getAllUsersFromStorage();
-    //    var_dump($users);
+        //    var_dump($users);
         $render = new Render();
         if (!$users) {
             return $render->renderPage(
@@ -98,7 +98,8 @@ class UserController extends AbstractController
                 'user-index.twig',
                 [
                     'title' => 'Список пользователей',
-                    'users' => $users
+                    'users' => $users,
+                    'isAdmin' => User::isAdmin($_SESSION['auth']['id_user'] ?? null)
                 ]
             );
         }
@@ -128,11 +129,12 @@ class UserController extends AbstractController
     public function actionDelete(): string
     {
         $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
+        //проверить права юзера
         if (User::exists($id)) {
             User::deleteFromStorage($id);
 
             $render = new Render();
-
+            
             return $render->renderPage(
                 'user-removed.twig',
                 []
@@ -158,8 +160,7 @@ class UserController extends AbstractController
             $button_name = 'Обновить';
             $title = 'Форма обновления пользователя';
             $id_visibility = 'visible';
-
-        } 
+        }
         $render = new Render();
         return $render->renderPageWithForm(
             'user-form.twig',
@@ -189,7 +190,8 @@ class UserController extends AbstractController
         return $render->renderPageWithForm(
             'user-auth.twig',
             [
-                'title' => 'Форма логина'
+                'title' => 'Форма логина',
+                'auth_success' => true
             ]
         );
     }
@@ -201,7 +203,7 @@ class UserController extends AbstractController
         if (isset($_POST['login']) && isset($_POST['password'])) {
             if (isset($_POST["user-remember"])) {
                 if ($_POST["user-remember"] === "remember") {
-                 //   $_SESSION['random_bytes'] = Application::$auth->generateToken();
+                    //   $_SESSION['random_bytes'] = Application::$auth->generateToken();
                     $_SESSION['random_bytes'] = random_bytes(200);
                     setcookie('random_bytes', $_SESSION['random_bytes'], time() + 24 * 3600, '/');
                 }
@@ -218,8 +220,8 @@ class UserController extends AbstractController
                 'user-auth.twig',
                 [
                     'title' => 'Форма логина',
-                    'auth-success' => false,
-                    'auth-error' => 'Неверные логин или пароль'
+                    'auth_success' => false,
+                    'auth_error' => 'Неверные логин или пароль'
                 ]
             );
         } else {
@@ -240,7 +242,7 @@ class UserController extends AbstractController
         $id = $_SESSION['auth']['id_user'];
         $user = User::getUserFromStorageById($id);
         $user->destroyRandomBytes();
-        
+
         setcookie('id_user', "", time() - 3600, '/');
 
         setcookie('random_bytes', "", time() - 3600, '/');
@@ -249,5 +251,42 @@ class UserController extends AbstractController
 
         header("Location: /");
         die();
+    }
+
+    public function actionIndexRefresh()
+    {
+        $limit = null;
+
+        if(isset($_POST['maxId']) && ($_POST['maxId'] > 0)){
+            $limit = $_POST['maxId'];
+        }
+        $users = User::getAllUsersFromStorage($limit);
+        $userData = [];
+        if(count($users) > 0){
+            foreach($users as $user) {
+                $userData[] =$user->getUserDataAsArray();
+            }
+        }
+
+        return json_encode($userData);
+
+        // $render = new Render();
+        // if (!$users) {
+        //     return $render->renderPartial(
+        //         'user-empty.tpl',
+        //         [
+        //             'title' => 'Список пользователей в хранилище',
+        //             'message' => "Список пуст или не найден"
+        //         ]
+        //     );
+        // } else {
+        //     return $render->renderPartial(
+        //         'user-index.tpl',
+        //         [
+        //             'title' => 'Список пользователей в хранилище',
+        //             'users' => $users
+        //         ]
+        //     );
+        // }
     }
 }

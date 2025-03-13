@@ -14,10 +14,9 @@ class Render
 
     public function __construct()
     {
-        $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] .
-            $this->viewFolder);
+        $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . "/../" . $this->viewFolder);
         $this->environment = new Environment($this->loader, [
-            //   'cache' => $_SERVER['DOCUMENT_ROOT'] . '/cache/',
+            //   'cache' => $_SERVER['DOCUMENT_ROOT'] . "/../" . '/cache/',
         ]);
         $this->environment->getExtension(\Twig\Extension\CoreExtension::class)->setTimezone('Europe/Moscow');
     }
@@ -70,6 +69,16 @@ class Render
                 'error_message' => $exception->getMessage()
             ]
         );
+    }
+
+    public function renderPartial(string $contentTemplateName, array
+    $templateVariables = []): string
+    {
+        $template = $this->environment->load($contentTemplateName);
+        if (isset($_SESSION['user_name'])) {
+            $templateVariables['user_authorized'] = true;
+        }
+        return $template->render($templateVariables);
     }
 }
 

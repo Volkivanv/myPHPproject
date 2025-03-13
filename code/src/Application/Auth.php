@@ -9,7 +9,8 @@ class Auth
         return password_hash($_GET['pass_string'], PASSWORD_BCRYPT);
     }
 
-    public function generateToken(){
+    public function generateToken()
+    {
         $bytes = random_bytes(16);
         return bin2hex($bytes);
     }
@@ -17,6 +18,9 @@ class Auth
 
     public function proceedAuth(string $login, string $password): bool
     {
+        if ($password == "") {
+            return false;
+        }
         $sql = "SELECT id_user, user_name, user_lastname, password_hash FROM
     users WHERE login = :login";
         $handler = Application::$storage->get()->prepare($sql);

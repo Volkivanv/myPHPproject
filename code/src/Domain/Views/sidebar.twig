@@ -1,5 +1,23 @@
-<div id="header">
-	{% include "auth-template.twig" %}
+<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-light" style="width: 280px;">
+	<a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-blue text-decoration-none">
+		<svg class="bi pe-none me-2" width="40" height="32">
+			<use xlink:href="#bootstrap"></use>
+		</svg>
+		<span class="fs-4">Справка</span>
+	</a>
+	<hr>
+	<ul class="nav nav-pills flex-column mb-auto">
+		<li class="nav-item">
+			<a href="/about" class="nav-link text-blue">
+				О нас
+			</a>
+		</li>
+		<li>
+			<a href="/site" class="nav-link text-blue">
+				Информация о сайте
+			</a>
+		</li>
+
+	</ul>
+
 </div>
-<a href="/about">О нас</a>
-<a href="/site">Информация о сайте</a>
