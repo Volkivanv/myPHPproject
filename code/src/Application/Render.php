@@ -5,6 +5,7 @@ namespace Geekbrains\Application1\Application;
 use Exception;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
+use Geekbrains\Application1\Domain\Models\User;
 
 class Render
 {
@@ -37,7 +38,7 @@ class Render
         // $xdebug = ob_get_clean();
         // $templateVariables['xdebug'] = $xdebug;
         // // ------
-
+        $templateVariables['isAdmin'] = User::isAdmin($_SESSION['auth']['id_user'] ?? null);
         if (isset($_SESSION['auth']['user_name'])) {
             $templateVariables['user_authorized'] = true;
             $templateVariables['authorized_name'] = $_SESSION['auth']['user_name'];

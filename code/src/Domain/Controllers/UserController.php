@@ -126,21 +126,34 @@ class UserController extends AbstractController
         }
     }
 
+    // public function actionDelete(): string
+    // {
+    //     $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
+    //     //проверить права юзера
+    //     if (User::exists($id)) {
+    //         User::deleteFromStorage($id);
+
+    //         $render = new Render();
+            
+    //         return $render->renderPage(
+    //             'user-removed.twig',
+    //             []
+    //         );
+    //     } else {
+    //         throw new \Exception("Пользователь не существует");
+    //     }
+    // }
+
     public function actionDelete(): string
     {
+        $idPost = isset($_GET['id']);;
         $id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
-        //проверить права юзера
         if (User::exists($id)) {
             User::deleteFromStorage($id);
+            return json_encode(['result' => true]);
 
-            $render = new Render();
-            
-            return $render->renderPage(
-                'user-removed.twig',
-                []
-            );
         } else {
-            throw new \Exception("Пользователь не существует");
+            return json_encode(['result' => false]);
         }
     }
 

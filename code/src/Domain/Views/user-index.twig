@@ -13,7 +13,7 @@
 						{% endif %}
 			</tr>
 		</thead>
-		<tbody>
+		<tbody class="user-table">
 			{% for user in users %}
 				<tr>
 					<td>
@@ -34,8 +34,9 @@
 							<td>
 								<a href='/user/edit/?id={{ user.getUserId() }}'>обновить</a>
 							</td>
-							<td id = '{{user.getUserId()}}' >
-								<a href='/user/show/?id={{ user.getUserId() }}'>удалить</a>
+							<td>
+								{# <a href='/user/show/?id={{ user.getUserId() }} #}
+								<a id = '{{user.getUserId()}}' href='#'>удалить</a>
 							</td>
 						{% endif %}
 				</tr>

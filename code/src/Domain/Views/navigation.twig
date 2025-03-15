@@ -1,15 +1,14 @@
-{# <a href="/">Главная</a>
-<a href="/user">Пользователи</a>
-<a href="/user/edit">Добавить пользователя</a> #}
+<ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+	<li>
+		<a href="/" class="nav-link px-2 link-secondary">Главная</a>
+	</li>
+	<li>
+		<a href="/user/index/" class="nav-link px-2 link-dark">Пользователи</a>
+	</li>
+	{% if isAdmin %}
+		<li>
+			<a href="/user/edit/" class="nav-link px-2 link-dark">Добавить пользователя</a>
+		</li>
+	{% endif %}
 
-		<ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-			<li>
-				<a href="/" class="nav-link px-2 link-secondary">Главная</a>
-			</li>
-			<li>
-				<a href="/user/index/" class="nav-link px-2 link-dark">Пользователи</a>
-			</li>
-            <li>
-				<a href="/user/edit/" class="nav-link px-2 link-dark">Добавить пользователя</a>
-			</li>
-		</ul>
+</ul>

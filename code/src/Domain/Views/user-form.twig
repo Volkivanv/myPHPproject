@@ -1,5 +1,39 @@
 <form action={{ action_user }} method="post">
 	<input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token }}">
+	<p  class="row mb-3" style="visibility: {{ id_visibility }}">
+		<label class="themed-grid-col col-md-3" for="user-id">id:</label>
+		<input class="themed-grid-col col-md-5" id="user-id" type="text" name="id" disabled="true"
+        value={{ user.getUserId() }}>
+	</p>
+	<p class="row mb-3">
+		<label class="themed-grid-col col-md-3" for="user-login">Логин:</label>
+		<input class="themed-grid-col col-md-5" id="user-login" type="text" name="login"
+        value={{ user.getLogin() }}>
+	</p>
+	<p class="row mb-3">
+		<label class="themed-grid-col col-md-3" for="user-name">Имя:</label>
+		<input class="themed-grid-col col-md-5" id="user-name" type="text" name="name"
+        value={{ user.getUserName() }}>
+	</p>
+	<p class="row mb-3">
+		<label class="themed-grid-col col-md-3" for="user-lastname">Фамилия:</label>
+		<input class="themed-grid-col col-md-5" id="user-lastname" type="text" name="lastname"
+        value={{ user.getUserLastName() }}>
+	</p>
+	<p class="row mb-3">
+		<label class="themed-grid-col col-md-3" for="user-birthday">День рождения:</label>
+		<input class="themed-grid-col col-md-5" id="user-birthday" type="text" name="birthday" 
+			{% if user.getUserBirthday() is empty %}
+				value="Не установлен"
+			{% else %}
+				value={{ user.getUserBirthday() | date('d.m.Y') }}
+			{% endif %}>
+	</p>
+	<p><input type="submit" value={{ button_name }}></p>
+</form>
+
+{# <form action={{ action_user }} method="post">
+	<input id="csrf_token" type="hidden" name="csrf_token" value="{{ csrf_token }}">
 	<p style="visibility: {{ id_visibility }}">
 		<label for="user-id">id:</label>
 		<input id="user-id" type="text" name="id"
@@ -30,4 +64,4 @@
 			{% endif %}>
 	</p>
 	<p><input type="submit" value={{ button_name }}></p>
-</form>
+</form> #}

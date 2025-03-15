@@ -57,10 +57,8 @@ class Auth
                 $_SESSION['auth']['user_lastname'] = $result[0]['user_lastname'];
                 $_SESSION['auth']['id_user'] = $result[0]['id_user'];
                 //fingerprint
-                var_dump('мы автоматически авторизовались');
                 return true;
             } else {
-                var_dump('мы автоматически не авторизовались');
                 return false;
             }
         } else {

@@ -1,12 +1,3 @@
-// setInterval(() => {
-//     const timeElement = document.querySelector('#time_element');
-//     fetch('/time/index/')
-//     .then(response => response.json())
-//     .then(data => {
-//         timeElement.textContent = data.time;
-//     })
-// }, 1000)
-
 setInterval(() => {
     const timeElement = document.querySelector('#time_element');
 (
@@ -16,4 +7,23 @@ setInterval(() => {
         timeElement.textContent = answer.time;
     }
 )();
-}, 1000)
+}, 1000);
+
+if (document.querySelector('.user-table')) {
+    const tableElement = document.querySelector('.user-table');
+    tableElement.addEventListener('click', function (e) {
+        const idUser = e.target.id;
+    
+        const rowEl = e.target.parentElement.parentElement;
+        (async () =>{
+            const response = await fetch(`/user/delete/?id=${idUser}`);
+            const answer = await response.json();
+            if(answer){
+                rowEl.remove();
+            }
+        })();
+    
+    });
+}
+
+
